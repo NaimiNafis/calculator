@@ -1,92 +1,34 @@
-let previousNumber = '';
-let currentNumber = '';
-let operator = '';
-
-const screen = document.querySelector('.screen');
-
-function buttonClick(value){
-    if (isNaN(value) && value !== '.' && value !== 'CLEAR' && value !== 'DELETE'){
-        operatorClick(value);
-    } else if (value !== '.' && value !== 'CLEAR' && value !== 'DELETE'){
-        numberClick(value);
-    } else if (value === 'CLEAR'){
-        clearClick();
-    } else if (value === 'DELETE'){
-        deleteClick();
-    }
-    updateDisplay(value);
-};
-
-function operatorClick(value){
-    if (currentNumber !== '') { 
-        if (previousNumber !== '') {
-            calculate();
-        }
-        previousNumber = currentNumber;
-        currentNumber = '';
-    }
-    operator = value;
-}
-
-function numberClick(value){
-    if (currentNumber === '' && value === '0'){
-        return;
-    }
-    currentNumber += value;
-}
-
-function updateDisplay(){
-    screen.innerText = currentNumber === '' ? previousNumber : currentNumber;
-}
-
-function clearClick(){
-    previousNumber = '';
-    currentNumber = '';
-    operator = '';
-}
-
-function deleteClick(){
-    currentNumber = currentNumber.substring(0, currentNumber.length - 1);
-}
-
-function calculate(){
-    let prev = parseInt(previousNumber, 10);
-    let current = parseInt(currentNumber, 10);
+const add = function(num1, num2){
+    return num1 + num2;
+  };
+  
+  const subtract = function(num1, num2){
+    return num1 - num2;
+  };
+  
+  const multiply = function(num1, num2){
+    return num1 * num2;
+  };
+  
+  const divide = function(num1, num2){
+    return num1 / num2;
+  };
+  
+  let num1, num2, operator;
+  
+  const operate = function(num1, num2, operator){
     switch(operator){
-        case '+':
-            previousNumber = prev + current;
-            break;
-        case '-':
-            previousNumber = prev - current;
-            break;
-        case 'x':
-            previousNumber = prev * current;
-            break;
-        case '/':
-            if (current === 0) {
-                screen.innerText = 'Error';
-                return;
-            }
-            previousNumber = prev / current;
-            break;          
+      case add:
+        return add(num1, num2);
+      case subtract:
+        return subtract(num1, num2);
+      case multiply:
+        return multiply(num1, num2);
+      case divide:
+        return divide(num1, num2);
+      default:
+        throw new Error("Invalid operator");
     }
-    currentNumber = '';
-    operator = '';
-    updateDisplay();
-}
-
-//expect buttonClick(event.target.innerText)
-function setupButtonListeners(){
-    const buttons = document.querySelectorAll('.calc-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            buttonClick(event.target.innerText);
-        });
-    });
-}
-
-setupButtonListeners();
-
-/*
-
- */
+  };
+  
+  console.log(operate(20, 5, multiply));
