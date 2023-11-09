@@ -54,6 +54,9 @@ function handleButtonClick(value){
 
 function deleteCount(){
     buffer = buffer.substring(0, buffer.length - 1);
+    if(buffer.length <= 0){
+        buffer = '0';
+    }
     updateDisplay();
 }
 
