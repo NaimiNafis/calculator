@@ -4,8 +4,6 @@ let operator;
 let buffer = '0';
 
 function updateDisplay(value){
-    // buffer = value; this means you just replace it entirely, we want to append it so,
-    buffer = buffer === "0" ? value : buffer + value;
     const screen = document.querySelector('.screen');
     screen.innerText = buffer;
 }
@@ -26,7 +24,7 @@ function operate(prevNum, currNum, operator){
             break;
         case '/':
             if (currNum === 0) {
-                return;
+                return "SYNTAX ERROR";
             }
             result = prevNum / currNum;
             break;
@@ -36,25 +34,33 @@ function operate(prevNum, currNum, operator){
     return result;
   }
 
-function clickButton(){
-    const buttons = document.querySelectorAll('.calc-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            handleButtonPress(e.target.innerText);
-        })
-    });
-}
-
-function handleButtonPress(value){
-    if(isNaN(value) && value !== '.'){
+function handleButtonClick(value){
+    if(isNaN(value) && value !== '.' && value !== 'DELETE' && value !== 'CLEAR'){
         handleOperator(value);
+    } else if(isNaN(value) && value !== '.' && value !== 'DELETE'){
+        clearCount();
+    } else if( isNaN(value) && value !== '.' && value !== 'CLEAR'){
+        deleteCount();
     } else {
         handleNumber(value);
     }
 }
 
+function deleteCount(){
+    buffer = buffer.substring(0, buffer.length - 1);
+    updateDisplay();
+}
+
+function clearCount(){
+    prevNum = '';
+    currNum = '';
+    operator = '';
+    buffer = '0';
+    updateDisplay();
+}
+
 function handleNumber(value){
-    buffer = buffer === "0" ? value : buffer + value;
+    buffer = buffer === '0' ? value : buffer + value;
     updateDisplay(buffer);
 }
 
@@ -88,6 +94,14 @@ function handleOperator(value) {
     }
 }
 
+function clickButton(){
+    const buttons = document.querySelectorAll('.calc-button');
+    buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            handleButtonClick(e.target.innerText);
+        })
+    });
+}
 
 clickButton();
 
@@ -97,10 +111,10 @@ clickButton();
 
 // When a button is clicked or clickButton()
 IF a button is clicked
-    CALL handleButtonPress with e.target.innerText
+    CALL handleButtonClick with e.target.innerText
 
-// Defining handleButtonPress function
-FUNCTION handleButtonPress(value)
+// Defining handleButtonClick function
+FUNCTION handleButtonClick(value)
     IF value is not a number (isNaN(value))
         CALL handleOperator with value
     ELSE
