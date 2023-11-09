@@ -6,7 +6,7 @@ const calcState = {
     buffer : '0',
 }
 
-function updateDisplay(value){
+function updateDisplay(){
     let screen = document.querySelector('.screen');
     screen.innerText = calcState.buffer;
 }
@@ -34,7 +34,11 @@ function operate(prevNum, currNum, operator){
         default:
             return;
     }
-    return result;
+    return roundResult(result).toString();
+}
+
+function roundResult(result){
+    return Math.round(result * 100000) / 100000;
 }
 
 function handleButtonClick(value){
@@ -56,8 +60,8 @@ function handleButtonClick(value){
 
 function deleteCount(){
     calcState.buffer = calcState.buffer.substring(0, calcState.buffer.length - 1);
-    if(buffer.length <= 0){
-        buffer = '0';
+    if(calcState.buffer.length <= 0){
+        calcState.buffer = '0';
     }
     updateDisplay();
 }
@@ -76,28 +80,34 @@ function handleNumber(value){
 }
 
 function handleOperator(value) {
-    if (value === '=') {
-        if (calcState.prevNum !== '' && calcState.operator !== null) {
-            calcState.currNum = calcState.buffer;
-            calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator).toString();
-            calcState.prevNum = '';
-            calcState.operator = null;
-            updateDisplay();
-        }
-    } else {
-        if (calcState.prevNum !== '' && calcState.operator !== null) {
-            calcState.currNum = calcState.buffer;
-            calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator).toString();
-            calcState.prevNum = calcState.buffer;
-        } else {
-            calcState.prevNum = calcState.buffer;
-        }
-
-        calcState.buffer = '';
-        calcState.operator = value;
+    switch (value) {
+        case '=':
+            if (calcState.prevNum !== '' && calcState.operator !== null) {
+                calcState.currNum = calcState.buffer;
+                calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
+                calcState.prevNum = '';
+                calcState.operator = null;
+                updateDisplay();
+            }
+            break;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            if (calcState.prevNum !== '' && calcState.operator !== null) {
+                calcState.currNum = calcState.buffer;
+                calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
+                calcState.prevNum = calcState.buffer;
+            } else {
+                calcState.prevNum = calcState.buffer;
+            }
+            calcState.buffer = '';
+            calcState.operator = value;
+            break;
+        default:
+            break;
     }
 }
-
 
 function clickButton(){
     const buttons = document.querySelectorAll('.calc-button');
