@@ -11,24 +11,29 @@ function updateDisplay(value){
 }
 
 function operate(prevNum, currNum, operator){
+    prevNum = parseFloat(prevNum);
+    currNum = parseFloat(currNum);
     let result;
     switch(operator){
         case '+':
             result = prevNum + currNum;
+            break;
         case '-':
             result = prevNum - currNum;
+            break;
         case '*':
             result = prevNum * currNum;
+            break;
         case '/':
             if (currNum === 0) {
                 return;
             }
             result = prevNum / currNum;
-        case '=':
-            updateDisplay(result);
+            break;
         default:
-        throw new Error("Invalid operator");
+            return;
     }
+    return result;
   }
 
 function clickButton(){
