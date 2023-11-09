@@ -30,54 +30,110 @@ function updateDisplay(value){
 }
 
 function operate(operator, num1, num2){
+    let result;
     switch(operator){
-      case 'add':
-        return add(num1, num2);
-      case 'subtract':
-        return subtract(num1, num2);
-      case 'multiply':
-        return multiply(num1, num2);
-      case 'divide':
-        return divide(num1, num2);
-      default:
+        case '+':
+            result = add(num1, num2);
+        case '-':
+            result = subtract(num1, num2);
+        case '*':
+            result = multiply(num1, num2);
+        case '/':
+            result = divide(num1, num2);
+        case '=':
+            updateDisplay(result)
+
+        default:
         throw new Error("Invalid operator");
     }
   }
 
-function buttonClick(){
+function clickButton(){
     const buttons = document.querySelectorAll('.calc-button');
     buttons.forEach(button => {
         button.addEventListener('click', (e) => {
-            updateDisplay(e.target.innerText);
+            handleButtonPress(e.target.innerText);
         })
     });
 }
 
-buttonClick();
+function handleButtonPress(value){
+    if(isNaN(value)){
+        handleOperator(value);
+    } else {
+        handleNumber(value);
+    }
+}
+
+function handleNumber(value){
+    buffer = buffer === "0" ? value : buffer + value;
+    if (operator === undefined) {
+        prevNum = buffer;
+    }
+    updateDisplay(buffer);
+}
+
+function handleOperator(value){
+    switch(value){
+        case '=':
+
+    }
+}
+
+
+
+clickButton();
 
 /*
 
-IF button click,
-    update e.target.innerText to initButtonListeners
+// Pseudocode for Calculator Functionality
 
-IN initButtonListeners,
-    IF e.target.innerText = value
-        is NaN THEN
-            pass it to isOperator(value)
-        is Number THEN
-            pass it to isNumber(value)
-        THEN operate;
+// When a button is clicked or clickButton()
+IF a button is clicked
+    CALL handleButtonPress with e.target.innerText
 
-IN isNumber(value),
-    store value to currNum,
-    IF prevNum is still '',
-        prevNum = currNum;
+// Defining handleButtonPress function
+FUNCTION handleButtonPress(value)
+    IF value is not a number (isNaN(value))
+        CALL handleOperator with value
     ELSE
-        return currNum;
+        CALL handleNumber with value
 
-IN operate,
-    let result;
-    FOR EACH cases,
-        DO task and store in result
-        updateDisplay(result);
+// Defining handleNumber function to handle number input
+FUNCTION handleNumber(value)
+    APPEND value to buffer
+    IF no previous operation pending (operator is undefined)
+        SET prevNum to buffer value
+    UPDATE display with buffer
+
+// Defining handleOperator function to handle operator input
+FUNCTION handleOperator(value)
+    IF value is '='
+        IF prevNum and operator are defined
+            CALL operate with prevNum, buffer (as currNum), and operator
+        ELSE
+            DO nothing (no operation to complete)
+    ELSE IF value is one of the operators '+', '-', '*', '/'
+        IF prevNum is not empty and operator is defined
+            CALL operate with prevNum, buffer (as currNum), and operator
+            RESET buffer to empty string
+            RESET prevNum to result of operation
+        SET operator to value
+    UPDATE display if needed
+
+// Defining operate function to perform the calculation
+FUNCTION operate(prevNum, currNum, operator)
+    SWITCH operator
+        CASE '+'
+            COMPUTE prevNum + currNum
+        CASE '-'
+            COMPUTE prevNum - currNum
+        CASE '*'
+            COMPUTE prevNum * currNum
+        CASE '/'
+            COMPUTE prevNum / currNum
+    STORE the result
+    UPDATE display with result
+    RESET buffer, prevNum, and operator as needed for next calculation
+
 */
