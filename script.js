@@ -1,11 +1,14 @@
-let prevNum = '';
-let currNum = '';
-let operator;
-let buffer = '0';
+//State Management to make state/value tracking easier
+const calcState = {
+    prevNum : '',
+    currNum : '',
+    operator : null,
+    buffer : '0',
+}
 
 function updateDisplay(value){
-    const screen = document.querySelector('.screen');
-    screen.innerText = buffer;
+    let screen = document.querySelector('.screen');
+    screen.innerText = calcState.buffer;
 }
 
 function operate(prevNum, currNum, operator){
@@ -32,7 +35,7 @@ function operate(prevNum, currNum, operator){
             return;
     }
     return result;
-  }
+}
 
 function handleButtonClick(value){
     if (!isNaN(value) || value === '.') {
@@ -51,9 +54,8 @@ function handleButtonClick(value){
     }
 }
 
-
 function deleteCount(){
-    buffer = buffer.substring(0, buffer.length - 1);
+    calcState.buffer = calcState.buffer.substring(0, calcState.buffer.length - 1);
     if(buffer.length <= 0){
         buffer = '0';
     }
@@ -61,47 +63,41 @@ function deleteCount(){
 }
 
 function clearCount(){
-    prevNum = '';
-    currNum = '';
-    operator = null;
-    buffer = '0';
+    calcState.prevNum = '';
+    calcState.currNum = '';
+    calcState.operator = null;
+    calcState.buffer = '0';
     updateDisplay();
 }
 
 function handleNumber(value){
-    buffer = buffer === '0' ? value : buffer + value;//if it is not 0, then append the value in screen, easier to delete
-    updateDisplay(buffer);
+    calcState.buffer = calcState.buffer === '0' ? value : calcState.buffer + value;//if it is not 0, then append the value in screen, easier to delete
+    updateDisplay();
 }
 
 function handleOperator(value) {
-    switch (value) {
-        case '=':
-            if (prevNum && operator) {
-                currNum = buffer;
-                buffer = operate(prevNum, currNum, operator).toString();
-                prevNum = '';
-                operator = null;
-                updateDisplay(buffer);
-            }
-            break;
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-            if (prevNum && operator) {
-                currNum = buffer;
-                buffer = operate(prevNum, currNum, operator).toString();
-                prevNum = buffer;
-            } else {
-                prevNum = buffer;
-            }
-            buffer = '';
-            operator = value;
-            break;
-        default:
-            break;
+    if (value === '=') {
+        if (calcState.prevNum !== '' && calcState.operator !== null) {
+            calcState.currNum = calcState.buffer;
+            calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator).toString();
+            calcState.prevNum = '';
+            calcState.operator = null;
+            updateDisplay();
+        }
+    } else {
+        if (calcState.prevNum !== '' && calcState.operator !== null) {
+            calcState.currNum = calcState.buffer;
+            calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator).toString();
+            calcState.prevNum = calcState.buffer;
+        } else {
+            calcState.prevNum = calcState.buffer;
+        }
+
+        calcState.buffer = '';
+        calcState.operator = value;
     }
 }
+
 
 function clickButton(){
     const buttons = document.querySelectorAll('.calc-button');
