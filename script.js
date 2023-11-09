@@ -109,6 +109,26 @@ function handleOperator(value) {
     }
 }
 
+function initCalc(){
+    const buttonsContainer = document.querySelector('.calc-buttons');
+    buttonsContainer.addEventListener('click', (e) => {
+        if (e.target.matches('button')){
+            handleButtonClick(e.target.innerText);
+        }
+    });
+}
+
+initCalc();
+
+
+
+
+
+/*
+This code tooks so many memories if there are lots buttons used.
+instead of attaching eventlisteners to each button, use event delegation and bubble up to use. 
+Use parent or container. the event listener will for 'click events' that bubble up from its children.
+
 function clickButton(){
     const buttons = document.querySelectorAll('.calc-button');
     buttons.forEach(button => {
@@ -120,9 +140,11 @@ function clickButton(){
 
 clickButton();
 
+*/
+
 /*
 
-// Pseudocode for Calculator Functionality
+Pseudocode:
 
 // When a button is clicked or clickButton()
 IF a button is clicked
