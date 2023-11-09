@@ -12,57 +12,90 @@ function updateDisplay(){
     screen.innerText = calcState.buffer;
 }
 
-function operate(prevNum, currNum, operator){
+function operate(prevNum, currNum, operator) {
+    // Perform calculation and return result.
     prevNum = parseFloat(prevNum);
     currNum = parseFloat(currNum);
-    let result;
-    switch(operator){
-        case '+':
-            result = prevNum + currNum;
-            break;
-        case '-':
-            result = prevNum - currNum;
-            break;
-        case '*':
-            result = prevNum * currNum;
-            break;
-        case '/':
-            if (currNum === 0) {
-                return "SYNTAX ERROR";
-            }
-            result = prevNum / currNum;
-            break;
-        default:
-            return;
+
+    switch (operator) {
+        case '+': return prevNum + currNum;
+        case '-': return prevNum - currNum;
+        case '*': return prevNum * currNum;
+        case '/': return currNum === 0 ? "SYNTAX ERROR" : prevNum / currNum;
+        default: return null;
     }
-    return roundResult(result).toString();
 }
 
 function roundResult(result){
     return Math.round(result * 100000) / 100000;
 }
 
+function finishOperation(result){
+    // update the state with the result, and reset ready state.
+    calcState.prevNum = '';
+    calcState.currNum = '';
+    calcState.operator = null;
+    calcState.buffer = result.toString();
+    calcState.isReadyForEqual = false;
+    updateDisplay();
+}
+
+function handleEqualOperation(result){
+    //Handle '='
+    if (calcState.isReadyForEqual){
+        const result = operate(calcState.prevNum, calcState.buffer, calcState.operator);
+        const roundedResult = roundResult(result);
+        finishOperation(roundedResult);
+    }
+}
+
 function handleButtonClick(value){
     //if number or period true
     if (!isNaN(value) || value === '.') {
-        //if ready for equal sign, ignore all number and .
+        //if ready for equal sign, ignore all number and '.'
         if (!calcState.isReadyForEqual) {
             handleNumber(value);
         }
+    } else if (value === 'CLEAR') {
+        clearCount();
+    } else if (value === 'DELETE') {
+        deleteCount();
     } else {
-        // if we have everything we need, and the button is not '=', ignore it unless it's a clear or delete command
-        if (calcState.isReadyForEqual && value !== '=' && value !== 'CLEAR' && value !== 'DELETE') {
+        // any other input is ignored if the state is ready for equal and the input is not '='
+        if (calcState.isReadyForEqual && value !== '='){
             return;
         }
+        handleOperator(value);
+    }
+}
+
+function handleNumber(value){
+    calcState.buffer = calcState.buffer === '0' ? value : calcState.buffer + value;//if it is not 0, then append the value in screen, easier to delete
+    updateDisplay();
+}
+
+function handleOperator(value) {
+    if(value === '=') {
+        handleEqualOperation();
+    } else {
         switch (value) {
-            case 'DELETE':
-                deleteCount();
-                break;
-            case 'CLEAR':
-                clearCount();
+            case '+':
+            case '-':
+            case '*':
+            case '/':
+                if (calcState.prevNum !== '' && calcState.operator !== null) {
+                    calcState.currNum = calcState.buffer;
+                    calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
+                    calcState.prevNum = calcState.buffer;
+                    calcState.isReadyForEqual = true;
+                } else {
+                    calcState.prevNum = calcState.buffer;
+                }
+                calcState.buffer = '';
+                calcState.operator = value;
                 break;
             default:
-                handleOperator(value);
+                break;
         }
     }
 }
@@ -84,43 +117,6 @@ function clearCount(){
     updateDisplay();
 }
 
-function handleNumber(value){
-    calcState.buffer = calcState.buffer === '0' ? value : calcState.buffer + value;//if it is not 0, then append the value in screen, easier to delete
-    updateDisplay();
-}
-
-function handleOperator(value) {
-    switch (value) {
-        case '=':
-            if (calcState.prevNum !== '' && calcState.operator !== null) {
-                calcState.currNum = calcState.buffer;
-                calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
-                calcState.prevNum = '';
-                calcState.operator = null;
-                calcState.isReadyForEqual = false;
-                updateDisplay();
-            }
-            break;
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-            if (calcState.prevNum !== '' && calcState.operator !== null) {
-                calcState.currNum = calcState.buffer;
-                calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
-                calcState.prevNum = calcState.buffer;
-                calcState.isReadyForEqual = true;
-            } else {
-                calcState.prevNum = calcState.buffer;
-            }
-            calcState.buffer = '';
-            calcState.operator = value;
-            break;
-        default:
-            break;
-    }
-}
-
 function initCalc(){
     const buttonsContainer = document.querySelector('.calc-buttons');
     buttonsContainer.addEventListener('click', (e) => {
@@ -131,9 +127,6 @@ function initCalc(){
 }
 
 initCalc();
-
-
-
 
 
 /*
