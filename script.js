@@ -46,7 +46,7 @@ function clickButton(){
 }
 
 function handleButtonPress(value){
-    if(isNaN(value)){
+    if(isNaN(value) && value !== '.'){
         handleOperator(value);
     } else {
         handleNumber(value);
@@ -55,29 +55,39 @@ function handleButtonPress(value){
 
 function handleNumber(value){
     buffer = buffer === "0" ? value : buffer + value;
-    if (operator === undefined) {
-        prevNum = buffer;
-    }
     updateDisplay(buffer);
 }
 
-function handleOperator(value){
-    switch(value){
+function handleOperator(value) {
+    switch (value) {
         case '=':
-            if(prevNum !== undefined && operator !== undefined) {
-                operate(prevNum, buffer, operator);
-            } else {
-                return;
+            if (prevNum && operator) {
+                currNum = buffer;
+                buffer = operate(prevNum, currNum, operator).toString();
+                prevNum = '';
+                operator = undefined;
+                updateDisplay(buffer);
             }
+            break;
         case '+':
         case '-':
         case '*':
         case '/':
-            let result = operate(prevNum, buffer, operator);
+            if (prevNum && operator) {
+                currNum = buffer;
+                buffer = operate(prevNum, currNum, operator).toString();
+                prevNum = buffer;
+            } else {
+                prevNum = buffer;
+            }
             buffer = '';
-            prevNum = result;
-    } operator = value;
+            operator = value;
+            break;
+        default:
+            break;
+    }
 }
+
 
 clickButton();
 
