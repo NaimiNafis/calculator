@@ -1,22 +1,3 @@
-const add = function(prevNum, currNum){
-    return prevNum + currNum;
-  };
-  
-const subtract = function(prevNum, currNum){
-    return prevNum - currNum;
-};
-
-const multiply = function(prevNum, currNum){
-    return prevNum * currNum;
-};
-
-const divide = function(prevNum, currNum){
-    if (currNum === 0) {
-        throw new Error("Division by zero");
-      }
-      return prevNum / currNum;
-};
-
 let prevNum = '';
 let currNum = '';
 let operator;
@@ -29,20 +10,22 @@ function updateDisplay(value){
     screen.innerText = buffer;
 }
 
-function operate(operator, num1, num2){
+function operate(prevNum, currNum, operator){
     let result;
     switch(operator){
         case '+':
-            result = add(num1, num2);
+            result = prevNum + currNum;
         case '-':
-            result = subtract(num1, num2);
+            result = prevNum - currNum;
         case '*':
-            result = multiply(num1, num2);
+            result = prevNum * currNum;
         case '/':
-            result = divide(num1, num2);
+            if (currNum === 0) {
+                return;
+            }
+            result = prevNum / currNum;
         case '=':
-            updateDisplay(result)
-
+            updateDisplay(result);
         default:
         throw new Error("Invalid operator");
     }
@@ -76,11 +59,20 @@ function handleNumber(value){
 function handleOperator(value){
     switch(value){
         case '=':
-
-    }
+            if(prevNum !== undefined && operator !== undefined) {
+                operate(prevNum, buffer, operator);
+            } else {
+                return;
+            }
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            let result = operate(prevNum, buffer, operator);
+            buffer = '';
+            prevNum = result;
+    } operator = value;
 }
-
-
 
 clickButton();
 
