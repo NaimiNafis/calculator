@@ -35,16 +35,22 @@ function operate(prevNum, currNum, operator){
   }
 
 function handleButtonClick(value){
-    if(isNaN(value) && value !== '.' && value !== 'DELETE' && value !== 'CLEAR'){
-        handleOperator(value);
-    } else if(isNaN(value) && value !== '.' && value !== 'DELETE'){
-        clearCount();
-    } else if( isNaN(value) && value !== '.' && value !== 'CLEAR'){
-        deleteCount();
-    } else {
+    if (!isNaN(value) || value === '.') {
         handleNumber(value);
+    } else {
+        switch (value) {
+            case 'DELETE':
+                deleteCount();
+                break;
+            case 'CLEAR':
+                clearCount();
+                break;
+            default:
+                handleOperator(value);
+        }
     }
 }
+
 
 function deleteCount(){
     buffer = buffer.substring(0, buffer.length - 1);
@@ -54,13 +60,13 @@ function deleteCount(){
 function clearCount(){
     prevNum = '';
     currNum = '';
-    operator = '';
+    operator = null;
     buffer = '0';
     updateDisplay();
 }
 
 function handleNumber(value){
-    buffer = buffer === '0' ? value : buffer + value;
+    buffer = buffer === '0' ? value : buffer + value;//if it is not 0, then append the value in screen, easier to delete
     updateDisplay(buffer);
 }
 
@@ -71,7 +77,7 @@ function handleOperator(value) {
                 currNum = buffer;
                 buffer = operate(prevNum, currNum, operator).toString();
                 prevNum = '';
-                operator = undefined;
+                operator = null;
                 updateDisplay(buffer);
             }
             break;
