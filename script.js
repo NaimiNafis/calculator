@@ -4,6 +4,7 @@ const calcState = {
     currNum : '',
     operator : null,
     buffer : '0',
+    isReadyForEqual : false,
 }
 
 function updateDisplay(){
@@ -42,9 +43,17 @@ function roundResult(result){
 }
 
 function handleButtonClick(value){
+    //if number or period true
     if (!isNaN(value) || value === '.') {
-        handleNumber(value);
+        //if ready for equal sign, ignore all number and .
+        if (!calcState.isReadyForEqual) {
+            handleNumber(value);
+        }
     } else {
+        // if we have everything we need, and the button is not '=', ignore it unless it's a clear or delete command
+        if (calcState.isReadyForEqual && value !== '=' && value !== 'CLEAR' && value !== 'DELETE') {
+            return;
+        }
         switch (value) {
             case 'DELETE':
                 deleteCount();
@@ -71,6 +80,7 @@ function clearCount(){
     calcState.currNum = '';
     calcState.operator = null;
     calcState.buffer = '0';
+    calcState.isReadyForEqual = false;
     updateDisplay();
 }
 
@@ -87,6 +97,7 @@ function handleOperator(value) {
                 calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
                 calcState.prevNum = '';
                 calcState.operator = null;
+                calcState.isReadyForEqual = false;
                 updateDisplay();
             }
             break;
@@ -98,6 +109,7 @@ function handleOperator(value) {
                 calcState.currNum = calcState.buffer;
                 calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
                 calcState.prevNum = calcState.buffer;
+                calcState.isReadyForEqual = true;
             } else {
                 calcState.prevNum = calcState.buffer;
             }
