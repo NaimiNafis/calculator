@@ -5,7 +5,7 @@ let buffer = '0';
 
 function updateDisplay(){
     const screen = document.querySelector('.screen');
-    screen.innerText = buffer.slice(0,7);
+    screen.innerText = buffer.slice(0,8);
 }
 
 function operate(prevNum, currNum, operator){

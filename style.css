@@ -1,5 +1,108 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,700;1,300;1,700&display=swap');
 
+html{
+    box-sizing: border-box;
+    height: 100%;
+}
+
+*,
+*::before,
+*::after{
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
 body{
-    font-family: 'Poppins', sans-serif;
+    font-family: Helvetica;
+    /* font-family: 'Poppins', sans-serif; */
+    background-color: #22313f;
+    display: flex;
+    flex-direction: column;
+    height: inherit;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper{
+    background-color: #eaeaea;
+    border: 1px solid #eaeaea;
+    border-radius: 15px;
+    flex-basis: 400px;
+    width: 300px;
+    padding: 20px;
+}
+
+.screen{
+    font-size: 50px;
+    border-radius: 10px;
+    overflow: auto;
+    padding: 15px;
+    text-align: right;
+}
+
+.calc-button-row{
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+}
+
+.calc-button{
+    background-color: #d3d6db;
+    border: 2px solid #d3d6db;
+    border-radius: 10px;
+    flex-basis: 22%;
+    font-size: 22px;
+    font-weight:9800;
+    font-family: inherit;
+    height: 50px;
+}
+
+#equal{
+    background-color: #f9b248;
+    border: 2px solid #f9b248;
+}
+
+.calc-button:last-child{
+    color: #83580b;
+    background-color: #f0d78c;
+    border: 2px solid #f0d78c;
+    border-radius: 10px;
+}
+
+.calc-button.f1{
+    color: #83580b;
+    background-color: #f0d78c;
+    border: 2px solid #f0d78c;
+    border-radius: 10px;
+}
+
+#zero{
+    flex-basis: 50%;
+}
+
+/* Footer */
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #eaeaea;
+    height: 60px;
+    flex-shrink: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+img {
+    width: 40px;
+    height: 40px;
+    margin: 0px 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+img:hover{
+    transform: scale(1.05);
 }

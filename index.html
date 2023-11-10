@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
     <title>Calculator</title>
+    <link rel="icon" href="./img/calculator-icon.png" type="image/png">
 </head>
 <body>
     <div class="wrapper">
@@ -14,10 +15,10 @@
         </section>
         <section class="calc-buttons">
             <div class="calc-button-row">
-                <button class="calc-button">AC</button>
-                <button class="calc-button">DEL</button>
-                <button class="calc-button">%</button>
-                <button class="calc-button">÷</button>
+                <button class="calc-button f1">AC</button>
+                <button class="calc-button f1">DEL</button>
+                <button class="calc-button f1">%</button>
+                <button class="calc-button f1">÷</button>
             </div>
             <div class="calc-button-row">
                 <button class="calc-button">7</button>
@@ -38,13 +39,18 @@
                 <button class="calc-button">-</button>
             </div>
             <div class="calc-button-row">
-                <button class="calc-button">0</button>
+                <button class="calc-button" id="zero">0</button>
                 <button class="calc-button">.</button>
-                <button class="calc-button">=</button>
+                <button class="calc-button" id="equal">=</button>
             </div>
         </section>
     </div>
-
+    <footer>
+        Copyright © NaimiNafis 2023
+        <a href="https://github.com/NaimiNafis" target="_blank">
+            <img src="./img/github.png" alt="github icon">
+        </a>
+    </footer>
     
 </body>
 </html>
