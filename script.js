@@ -27,6 +27,7 @@ function operate(prevNum, currNum, operator) {
 }
 
 function roundResult(result){
+    //turn to 5 decimal point only, prevent overflow
     return Math.round(result * 100000) / 100000;
 }
 
@@ -75,30 +76,22 @@ function handleNumber(value){
 }
 
 function handleOperator(value) {
-    if(value === '=') {
+    if (value === '=') {
         handleEqualOperation();
     } else {
-        switch (value) {
-            case '+':
-            case '-':
-            case '*':
-            case '/':
-                if (calcState.prevNum !== '' && calcState.operator !== null) {
-                    calcState.currNum = calcState.buffer;
-                    calcState.buffer = operate(calcState.prevNum, calcState.currNum, calcState.operator);
-                    calcState.prevNum = calcState.buffer;
-                    calcState.isReadyForEqual = true;
-                } else {
-                    calcState.prevNum = calcState.buffer;
-                }
-                calcState.buffer = '';
-                calcState.operator = value;
-                break;
-            default:
-                break;
+        if (calcState.prevNum !== '' && calcState.operator !== null && calcState.buffer !== '') {
+            calcState.currNum = calcState.buffer;
+            const result = operate(calcState.prevNum, calcState.currNum, calcState.operator);
+            calcState.buffer = roundResult(result).toString();
+            updateDisplay();
         }
+        calcState.prevNum = calcState.buffer;
+        calcState.buffer = '';
+        calcState.operator = value;
+        calcState.isReadyForEqual = true; // Ready for next number
     }
 }
+
 
 function deleteCount(){
     calcState.buffer = calcState.buffer.substring(0, calcState.buffer.length - 1);
