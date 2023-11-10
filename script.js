@@ -5,7 +5,7 @@ let buffer = '0';
 
 function updateDisplay(){
     const screen = document.querySelector('.screen');
-    screen.innerText = buffer;
+    screen.innerText = buffer.slice(0,7);
 }
 
 function operate(prevNum, currNum, operator){
@@ -19,10 +19,10 @@ function operate(prevNum, currNum, operator){
         case '-':
             result = prevNum - currNum;
             break;
-        case '*':
+        case 'x':
             result = prevNum * currNum;
             break;
-        case '/':
+        case '÷':
             if (currNum === 0) {
                 return "SYNTAX ERROR";
             }
@@ -31,7 +31,7 @@ function operate(prevNum, currNum, operator){
         default:
             return;
     }
-    return roundedResult(result);
+    return roundedResult(result).toString();
 }
 
 function roundedResult(result){
@@ -43,16 +43,26 @@ function handleButtonClick(value){
         handleNumber(value);
     } else {
         switch (value) {
-            case 'DELETE':
+            case '%':
+                applyPercentage();
+                break;
+            case 'DEL':
                 deleteCount();
                 break;
-            case 'CLEAR':
+            case 'AC':
                 clearCount();
                 break;
             default:
                 handleOperator(value);
         }
     }
+}
+
+function applyPercentage(){
+    parseFloat(buffer);
+    buffer /= 100;
+    buffer = buffer.toString();
+    updateDisplay();
 }
 
 function deleteCount(){
@@ -89,7 +99,7 @@ function handleOperator(value) {
             buffer = '';
         } else if (operator) {
             currNum = buffer;
-            buffer = operate(prevNum, currNum, operator).toString();
+            buffer = operate(prevNum, currNum, operator);
             prevNum = buffer;
             buffer = '';
         }
@@ -97,7 +107,7 @@ function handleOperator(value) {
     } else {
         if (prevNum && operator) {
             currNum = buffer;
-            buffer = operate(prevNum, currNum, operator).toString();
+            buffer = operate(prevNum, currNum, operator);
             prevNum = '';
             currNum = '';
             operator = null;
@@ -106,13 +116,12 @@ function handleOperator(value) {
     }
 }
 
-function clickButton(){
-    const buttons = document.querySelectorAll('.calc-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', (e) => {
+function initCalc(){
+    const buttonsContainer = document.querySelector('.calc-buttons');
+    buttonsContainer.addEventListener('click', (e) => {
+        if (e.target.matches('button')){
             handleButtonClick(e.target.innerText);
-        })
+        }
     });
 }
-
-clickButton();
+initCalc();
