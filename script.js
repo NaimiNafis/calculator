@@ -24,7 +24,7 @@ function operate(prevNum, currNum, operator){
             break;
         case '÷':
             if (currNum === 0) {
-                return "SYNTAX ERROR";
+                return "Error";
             }
             result = prevNum / currNum;
             break;
