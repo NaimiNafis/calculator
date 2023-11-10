@@ -1,131 +1,111 @@
-//State Management to make state/value tracking easier
-const calcState = {
-    prevNum : '',
-    currNum : '',
-    operator : null,
-    buffer : '0',
-    isReadyForEqual : false,
-}
+let prevNum = '';
+let currNum = '';
+let operator;
+let buffer = '0';
 
 function updateDisplay(){
-    let screen = document.querySelector('.screen');
-    screen.innerText = calcState.buffer;
+    const screen = document.querySelector('.screen');
+    screen.innerText = buffer;
 }
 
-function operate(prevNum, currNum, operator) {
-    // Perform calculation and return result.
+function operate(prevNum, currNum, operator){
     prevNum = parseFloat(prevNum);
     currNum = parseFloat(currNum);
-
-    switch (operator) {
-        case '+': return prevNum + currNum;
-        case '-': return prevNum - currNum;
-        case '*': return prevNum * currNum;
-        case '/': return currNum === 0 ? "SYNTAX ERROR" : prevNum / currNum;
-        default: return null;
+    let result;
+    switch(operator){
+        case '+':
+            result = prevNum + currNum;
+            break;
+        case '-':
+            result = prevNum - currNum;
+            break;
+        case '*':
+            result = prevNum * currNum;
+            break;
+        case '/':
+            if (currNum === 0) {
+                return "SYNTAX ERROR";
+            }
+            result = prevNum / currNum;
+            break;
+        default:
+            return;
     }
+    return roundedResult(result);
 }
 
-function roundResult(result){
-    //turn to 5 decimal point only, prevent overflow
-    return Math.round(result * 100000) / 100000;
-}
-
-function finishOperation(result){
-    // update the state with the result, and reset ready state.
-    calcState.prevNum = '';
-    calcState.currNum = '';
-    calcState.operator = null;
-    calcState.buffer = result.toString();
-    calcState.isReadyForEqual = false;
-    updateDisplay();
-}
-
-function handleEqualOperation(result){
-    //Handle '='
-    if (calcState.isReadyForEqual){
-        const result = operate(calcState.prevNum, calcState.buffer, calcState.operator);
-        const roundedResult = roundResult(result);
-        finishOperation(roundedResult);
-    }
+function roundedResult(result){
+    return Math.round(result * 1000000)/1000000;
 }
 
 function handleButtonClick(value){
-    //if number or period true
     if (!isNaN(value) || value === '.') {
-        //if ready for equal sign, ignore all number and '.'
-        if (!calcState.isReadyForEqual) {
-            handleNumber(value);
-        }
-    } else if (value === 'CLEAR') {
-        clearCount();
-    } else if (value === 'DELETE') {
-        deleteCount();
+        handleNumber(value);
     } else {
-        // any other input is ignored if the state is ready for equal and the input is not '='
-        if (calcState.isReadyForEqual && value !== '='){
-            return;
+        switch (value) {
+            case 'DELETE':
+                deleteCount();
+                break;
+            case 'CLEAR':
+                clearCount();
+                break;
+            default:
+                handleOperator(value);
         }
-        handleOperator(value);
     }
 }
-
-function handleNumber(value){
-    calcState.buffer = calcState.buffer === '0' ? value : calcState.buffer + value;//if it is not 0, then append the value in screen, easier to delete
-    updateDisplay();
-}
-
-function handleOperator(value) {
-    if (value === '=') {
-        handleEqualOperation();
-    } else {
-        if (calcState.prevNum !== '' && calcState.operator !== null && calcState.buffer !== '') {
-            calcState.currNum = calcState.buffer;
-            const result = operate(calcState.prevNum, calcState.currNum, calcState.operator);
-            calcState.buffer = roundResult(result).toString();
-            updateDisplay();
-        }
-        calcState.prevNum = calcState.buffer;
-        calcState.buffer = '';
-        calcState.operator = value;
-        calcState.isReadyForEqual = true; // Ready for next number
-    }
-}
-
 
 function deleteCount(){
-    calcState.buffer = calcState.buffer.substring(0, calcState.buffer.length - 1);
-    if(calcState.buffer.length <= 0){
-        calcState.buffer = '0';
+    buffer = buffer.substring(0, buffer.length - 1);
+    if(buffer.length <= 0){
+        buffer = '0';
     }
     updateDisplay();
 }
 
 function clearCount(){
-    calcState.prevNum = '';
-    calcState.currNum = '';
-    calcState.operator = null;
-    calcState.buffer = '0';
-    calcState.isReadyForEqual = false;
+    prevNum = '';
+    currNum = '';
+    operator = null;
+    buffer = '0';
     updateDisplay();
 }
 
-function initCalc(){
-    const buttonsContainer = document.querySelector('.calc-buttons');
-    buttonsContainer.addEventListener('click', (e) => {
-        if (e.target.matches('button')){
-            handleButtonClick(e.target.innerText);
-        }
-    });
+function handleNumber(value){
+    if (value === '.' && buffer.includes('.')) {
+        return;
+    }
+    if (operator && buffer === '') {
+        buffer = value;
+    } else {
+        buffer = buffer === '0' ? value : buffer + value;
+    }
+    updateDisplay();
 }
 
-initCalc();
-
-
-/*
-This code tooks so many memories if there are lots buttons used.
-instead of attaching eventlisteners to each button, use event delegation and bubble up to use. 
-Use parent or container. the event listener will for 'click events' that bubble up from its children.
+function handleOperator(value) {
+    if (value !== '=') {
+        if (!prevNum) {
+            prevNum = buffer;
+            buffer = '';
+        } else if (operator) {
+            currNum = buffer;
+            buffer = operate(prevNum, currNum, operator).toString();
+            prevNum = buffer;
+            buffer = '';
+        }
+        operator = value;
+    } else {
+        if (prevNum && operator) {
+            currNum = buffer;
+            buffer = operate(prevNum, currNum, operator).toString();
+            prevNum = '';
+            currNum = '';
+            operator = null;
+        }
+        updateDisplay();
+    }
+}
 
 function clickButton(){
     const buttons = document.querySelectorAll('.calc-button');
@@ -138,11 +118,10 @@ function clickButton(){
 
 clickButton();
 
-*/
 
 /*
 
-Pseudocode:
+// Pseudocode for Calculator Functionality
 
 // When a button is clicked or clickButton()
 IF a button is clicked
