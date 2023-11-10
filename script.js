@@ -3,7 +3,7 @@ let currNum = '';
 let operator;
 let buffer = '0';
 
-function updateDisplay(value){
+function updateDisplay(){
     const screen = document.querySelector('.screen');
     screen.innerText = buffer;
 }
@@ -31,8 +31,12 @@ function operate(prevNum, currNum, operator){
         default:
             return;
     }
-    return result;
-  }
+    return roundedResult(result);
+}
+
+function roundedResult(result){
+    return Math.round(result * 1000000)/1000000;
+}
 
 function handleButtonClick(value){
     if (!isNaN(value) || value === '.') {
@@ -51,7 +55,6 @@ function handleButtonClick(value){
     }
 }
 
-
 function deleteCount(){
     buffer = buffer.substring(0, buffer.length - 1);
     if(buffer.length <= 0){
@@ -69,37 +72,37 @@ function clearCount(){
 }
 
 function handleNumber(value){
-    buffer = buffer === '0' ? value : buffer + value;//if it is not 0, then append the value in screen, easier to delete
-    updateDisplay(buffer);
+    if (value === '.' && buffer.includes('.')) {
+        return;
+    } else if (operator && buffer === '') {
+        buffer = value;
+    } else {
+        buffer = buffer === '0' ? value : buffer + value;
+    }
+    updateDisplay();
 }
 
 function handleOperator(value) {
-    switch (value) {
-        case '=':
-            if (prevNum && operator) {
-                currNum = buffer;
-                buffer = operate(prevNum, currNum, operator).toString();
-                prevNum = '';
-                operator = null;
-                updateDisplay(buffer);
-            }
-            break;
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-            if (prevNum && operator) {
-                currNum = buffer;
-                buffer = operate(prevNum, currNum, operator).toString();
-                prevNum = buffer;
-            } else {
-                prevNum = buffer;
-            }
+    if (value !== '=') {
+        if (!prevNum) {
+            prevNum = buffer;
             buffer = '';
-            operator = value;
-            break;
-        default:
-            break;
+        } else if (operator) {
+            currNum = buffer;
+            buffer = operate(prevNum, currNum, operator).toString();
+            prevNum = buffer;
+            buffer = '';
+        }
+        operator = value;
+    } else {
+        if (prevNum && operator) {
+            currNum = buffer;
+            buffer = operate(prevNum, currNum, operator).toString();
+            prevNum = '';
+            currNum = '';
+            operator = null;
+        }
+        updateDisplay();
     }
 }
 
@@ -113,6 +116,7 @@ function clickButton(){
 }
 
 clickButton();
+
 
 /*
 
